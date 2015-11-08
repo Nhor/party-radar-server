@@ -3,13 +3,14 @@ from rest_framework.decorators import \
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.authentication import TokenAuthentication
 from .serializers import *
 from .models import *
 
 
 @api_view(['POST'])
 @authentication_classes(()) # explicitly override to allow all
-def login_api(request):
+def login(request):
     """
     Login user using email and password as credentials.
     """
@@ -26,8 +27,9 @@ def login_api(request):
         status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-def logout_api(request):
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication, ))
+def logout(request):
     """
     Logout already logged in user.
     """

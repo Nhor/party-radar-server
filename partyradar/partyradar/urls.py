@@ -17,6 +17,6 @@ from django.conf.urls import url
 from api.views import *
 
 urlpatterns = [
-    url(r'^login', login_api),
-    url(r'^logout', logout_api),
+    url(r'^login', login),
+    url(r'^logout', logout),
 ]
