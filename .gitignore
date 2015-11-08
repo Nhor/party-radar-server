@@ -1,0 +1,6 @@
+# virtualenv
+venv/*
+run-venv.bat
+
+# pycharm
+.idea/*
