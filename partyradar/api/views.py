@@ -24,7 +24,9 @@ def login(request):
     if user:
         user = user.first()
         if user.check_password(password):
-            Token.objects.get(user=user).delete()
+            token = Token.objects.filter(user=user)
+            if token:
+                token.first().delete()
             token = Token.objects.create(user=user)
             return Response({'status': 'ok', 'token': token.key})
     return Response({'status': 'Invalid credentials.'},
