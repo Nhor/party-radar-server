@@ -14,7 +14,7 @@ def login(request):
     """
     Login user using email and password as credentials.
     """
-    credentials = LoginSerializer(data=request.POST)
+    credentials = LoginSerializer(data=request.data)
     if not credentials.is_valid():
         return Response(credentials.errors,
             status=status.HTTP_400_BAD_REQUEST)
@@ -47,7 +47,7 @@ def register(request):
     """
     Register new user with username, email and password.
     """
-    credentials = RegisterSerializer(data=request.POST)
+    credentials = RegisterSerializer(data=request.data)
     if not credentials.is_valid():
         return Response(credentials.errors,
             status=status.HTTP_400_BAD_REQUEST)
