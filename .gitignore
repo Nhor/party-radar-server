@@ -4,3 +4,6 @@ run-venv.bat
 
 # pycharm
 partyradar/.idea/*
+
+# compiled python
+*.pyc
