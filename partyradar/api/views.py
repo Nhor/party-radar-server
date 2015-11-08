@@ -18,12 +18,16 @@ def login(request):
     if not credentials.is_valid():
         return Response(credentials.errors,
             status=status.HTTP_400_BAD_REQUEST)
-    user = User.objects.get(email=credentials.data.get('email'))
+    email = credentials.data.get('email')
+    password = credentials.data.get('password')
+    user = User.objects.filter(email=email)
     if user:
-        Token.objects.get(user=user).delete()
-        token = Token.objects.create(user=user)
-        return Response({'status': 'ok', 'token': token.key})
-    return Response({'status': 'invalid'},
+        user = user.first()
+        if user.check_password(password):
+            Token.objects.get(user=user).delete()
+            token = Token.objects.create(user=user)
+            return Response({'status': 'ok', 'token': token.key})
+    return Response({'status': 'Invalid credentials.'},
         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -35,3 +39,34 @@ def logout(request):
     """
     Token.objects.get(user=request.user).delete()
     return Response({'status': 'ok'})
+
+
+@api_view(['POST'])
+@authentication_classes(()) # explicitly override to allow all
+def register(request):
+    """
+    Register new user with username, email and password.
+    """
+    credentials = RegisterSerializer(data=request.POST)
+    if not credentials.is_valid():
+        return Response(credentials.errors,
+            status=status.HTTP_400_BAD_REQUEST)
+    username = credentials.data.get('username')
+    email = credentials.data.get('email')
+    password = credentials.data.get('password')
+    if User.objects.filter(username=username):
+        return Response({'status': 'Username already in use.'},
+            status=status.HTTP_400_BAD_REQUEST)
+    if User.objects.filter(email=email):
+        return Response({'status': 'Email already in use.'},
+            status=status.HTTP_400_BAD_REQUEST)
+    if len(password) < 6:
+        return Response({'status': 'Password too short.'},
+            status=status.HTTP_400_BAD_REQUEST)
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password
+    )
+    token = Token.objects.create(user=user)
+    return Response({'status': 'ok', 'token': token.key})
