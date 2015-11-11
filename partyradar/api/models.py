@@ -5,7 +5,7 @@ from uuid import uuid4
 
 def get_post_image_upload_path(instance, filename):
     user = instance.user.username
-    uuid = uuid4().replace('-', '')
+    uuid = str(uuid4()).replace('-', '')
     ext = filename.split('.')[1]
     return '{0}/images/{1}.{2}'.format(user, uuid, ext)
 
