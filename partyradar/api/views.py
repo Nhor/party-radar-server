@@ -7,7 +7,7 @@ from rest_framework.authentication import TokenAuthentication
 from .serializers import *
 from .models import *
 from datetime import datetime, timedelta
-from math import cos
+from math import cos, radians
 
 
 @api_view(['POST'])
@@ -114,7 +114,7 @@ def get_posts(request):
             status=status.HTTP_400_BAD_REQUEST)
     radius_lat = inputs.data['radius'] / 110.574
     radius_lon = inputs.data['radius'] / \
-        (111.320 * cos(inputs.data['lat']))
+        (111.320 * cos(radians(inputs.data['lat'])))
     posts = Post.objects.filter(
         lat__range=(inputs.data['lat']-radius_lat,
                     inputs.data['lat']+radius_lat),
