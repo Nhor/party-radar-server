@@ -92,7 +92,7 @@ def submit_post(request):
             status=status.HTTP_400_BAD_REQUEST)
     Post.objects.create(
         user=request.user,
-        photo=post.data['photo'],
+        photo=request.data['photo'],
         description=post.data['description'],
         lat=post.data['lat'],
         lon=post.data['lon']
