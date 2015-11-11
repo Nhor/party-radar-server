@@ -124,4 +124,4 @@ def get_posts(request):
             hours=inputs.data['time_offset'])
     )
     outputs = GetPostsResponseSerializer(posts, many=True)
-    return Response(outputs.data)
+    return Response({'posts': outputs.data})
