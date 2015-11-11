@@ -9,7 +9,7 @@ from .models import *
 
 
 @api_view(['POST'])
-@authentication_classes(()) # explicitly override to allow all
+@authentication_classes(())
 def login(request):
     """
     Login user using email and password as credentials.
@@ -44,7 +44,7 @@ def logout(request):
 
 
 @api_view(['POST'])
-@authentication_classes(()) # explicitly override to allow all
+@authentication_classes(())
 def register(request):
     """
     Register new user with username, email and password.
@@ -72,3 +72,23 @@ def register(request):
     )
     token = Token.objects.create(user=user)
     return Response({'status': 'ok', 'token': token.key})
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication, ))
+def submit_post(request):
+    """
+    Submit new post/entry.
+    """
+    post = SubmitPostSerializer(data=request.data)
+    if not post.is_valid():
+        return Response(post.errors,
+            status=status.HTTP_400_BAD_REQUEST)
+    Post.objects.create(
+        user=request.user,
+        photo=post.photo,
+        description=post.description,
+        lat=post.lat,
+        lon=post.lon
+    )
+    return Response({'status': 'ok'})
