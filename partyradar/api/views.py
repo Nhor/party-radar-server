@@ -41,6 +41,8 @@ def logout(request):
     """
     Logout already logged in user.
     """
+    if type(request.user) != User:
+        return Response(status=status.HTTP_403_FORBIDDEN)
     Token.objects.get(user=request.user).delete()
     return Response({'status': 'ok'})
 
@@ -82,6 +84,8 @@ def submit_post(request):
     """
     Submit new post/entry.
     """
+    if type(request.user) != User:
+        return Response(status=status.HTTP_403_FORBIDDEN)
     post = SubmitPostSerializer(data=request.data)
     if not post.is_valid():
         return Response(post.errors,
@@ -102,6 +106,8 @@ def get_posts(request):
     """
     Get all posts/entries in the given radius.
     """
+    if type(request.user) != User:
+        return Response(status=status.HTTP_403_FORBIDDEN)
     inputs = GetPostsSerializer(data=request.query_params)
     if not inputs.is_valid():
         return Response(inputs.errors,
