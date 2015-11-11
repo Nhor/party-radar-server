@@ -6,6 +6,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from .serializers import *
 from .models import *
+from datetime import datetime, timedelta
+from math import cos
 
 
 @api_view(['POST'])
@@ -92,3 +94,24 @@ def submit_post(request):
         lon=post.lon
     )
     return Response({'status': 'ok'})
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication, ))
+def get_posts(request):
+    """
+    Get all posts/entries in the given radius.
+    """
+    inputs = GetPostsSerializer(data=request.query_params)
+    if not inputs.is_valid():
+        return Response(inputs.errors,
+            status=status.HTTP_400_BAD_REQUEST)
+    radius_lat = inputs.radius / 110.574
+    radius_lon = inputs.radius / (111.320 * cos(inputs.lat))
+    posts = Post.objects.filter(
+        lat__range=(inputs.lat-radius_lat, inputs.lat+radius_lat),
+        lon__range=(inputs.lon-radius_lon, inputs.lon+radius_lon),
+        created__gte=datetime.now()-timedelta(hours=inputs.time_offset)
+    )
+    outputs = GetPostsResponseSerializer(posts, many=True)
+    return Response(outputs.data)

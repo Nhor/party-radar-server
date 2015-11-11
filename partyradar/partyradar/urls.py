@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^logout', logout),
     url(r'^register', register),
     url(r'^submit-post', submit_post),
+    url(r'^get-posts', get_posts),
 ]
 
 if settings.DEBUG:
