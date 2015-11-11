@@ -88,10 +88,10 @@ def submit_post(request):
             status=status.HTTP_400_BAD_REQUEST)
     Post.objects.create(
         user=request.user,
-        photo=post.photo,
-        description=post.description,
-        lat=post.lat,
-        lon=post.lon
+        photo=post.data.photo,
+        description=post.data.description,
+        lat=post.data.lat,
+        lon=post.data.lon
     )
     return Response({'status': 'ok'})
 
@@ -106,12 +106,15 @@ def get_posts(request):
     if not inputs.is_valid():
         return Response(inputs.errors,
             status=status.HTTP_400_BAD_REQUEST)
-    radius_lat = inputs.radius / 110.574
-    radius_lon = inputs.radius / (111.320 * cos(inputs.lat))
+    radius_lat = inputs.data.radius / 110.574
+    radius_lon = inputs.data.radius / (111.320 * cos(inputs.data.lat))
     posts = Post.objects.filter(
-        lat__range=(inputs.lat-radius_lat, inputs.lat+radius_lat),
-        lon__range=(inputs.lon-radius_lon, inputs.lon+radius_lon),
-        created__gte=datetime.now()-timedelta(hours=inputs.time_offset)
+        lat__range=(inputs.data.lat-radius_lat,
+                    inputs.data.lat+radius_lat),
+        lon__range=(inputs.data.lon-radius_lon,
+                    inputs.data.lon+radius_lon),
+        created__gte=datetime.now()-timedelta(
+            hours=inputs.data.time_offset)
     )
     outputs = GetPostsResponseSerializer(posts, many=True)
     return Response(outputs.data)
